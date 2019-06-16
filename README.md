@@ -1,5 +1,7 @@
 # Approve Circle CI (Chrome Extension)
 
+[chrome web store](https://chrome.google.com/webstore/detail/approve-circleci/gfckdkpokbbahlgihncaiajimhkibmpl)
+
 ## Screen Shot
 
 ![image](https://user-images.githubusercontent.com/19199223/59563871-5354ff80-907a-11e9-89a6-f249cea5a964.png)
