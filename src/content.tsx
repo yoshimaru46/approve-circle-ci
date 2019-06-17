@@ -1,12 +1,8 @@
-import * as React from 'react';
-import { render } from 'react-dom';
-import ApproveButton from './circle-ci/ApproveButton'
-
-function getWorkflowId() {
+function getWorkflowID() {
   const partialPullMerging = document.querySelector('#partial-pull-merging');
 
   if (partialPullMerging == null) {
-    return;
+    return '';
   }
 
   const statusActions = partialPullMerging.getElementsByClassName('status-actions');
@@ -20,36 +16,15 @@ function getWorkflowId() {
     ) {
 
       workflowUrl = new URL(a.getAttribute('href')).pathname;
-
-      const button = document.createElement('span');
-      button.id = 'circle-ci-approve-button';
-
-      a.parentNode.appendChild(button);
     }
   });
 
   return workflowUrl.split('/')[2];
 }
 
-function main() {
-  const workflowId = getWorkflowId();
-
-  if (workflowId === undefined) {
-    return;
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.method === 'getWorkflowID') {
+    sendResponse({ workflowID: getWorkflowID() });
   }
-
-  render(
-    <ApproveButton workflowId={workflowId}/>,
-    document.getElementById('circle-ci-approve-button'),
-  );
-}
-
-chrome.runtime.onMessage.addListener(
-  (request) => {
-    if (request.message === 'changeUrl') {
-      // TODO: wait DOM element
-      setTimeout(main, 1500);
-    }
-  });
-
-main();
+  return true;
+});

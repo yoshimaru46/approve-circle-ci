@@ -4,7 +4,7 @@
 
 ## Screen Shot
 
-![image](https://user-images.githubusercontent.com/19199223/59563871-5354ff80-907a-11e9-89a6-f249cea5a964.png)
+<img width="828" alt="Screen Shot 2019-06-18 at 01 29 00" src="https://user-images.githubusercontent.com/19199223/59620734-8e356100-9168-11e9-8c42-4c4bbaa900b2.png">
 
 ## Building
 

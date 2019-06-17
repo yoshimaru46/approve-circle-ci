@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Approve CircleCI",
   "description": "Approve Holded CircleCI job from GitHub page",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "background": {
     "scripts": [
       "js/background.js"
@@ -20,6 +20,18 @@
       "run_at": "document_end"
     }
   ],
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+C",
+        "mac": "MacCtrl+Shift+C"
+      },
+      "description": "Opens popup.html"
+    }
+  },
   "options_ui": {
     "page": "options.html",
     "chrome_style": true
