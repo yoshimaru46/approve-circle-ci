@@ -1,19 +1,28 @@
-chrome.tabs.onUpdated.addListener(
-  (tabId, changeInfo) => {
-    const regexp = new RegExp('^https:\/\/github.com\/[a-z0-9-_]*\/[a-z0-9-_]*\/pull\/[0-9]*$');
-
-    if (changeInfo.url && regexp.test(changeInfo.url)) {
-      chrome.tabs.sendMessage(tabId, {
-        message: 'changeUrl',
-      });
-    }
-  },
-);
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // tslint:disable-next-line:no-console
+  console.log('background.ts request', request);
+
+  if (request.method === 'popupMounted') {
+    const queryInfo = {
+      active: true,
+      windowId: chrome.windows.WINDOW_ID_CURRENT,
+    };
+
+    chrome.tabs.query(queryInfo, (result) => {
+      const currentTab = result.shift();
+      const message = { method: 'getWorkflowID' };
+      chrome.tabs.sendMessage(currentTab.id, message, (res) => {
+        chrome.runtime.sendMessage({
+          data: { workflowID: res.workflowID },
+          method: 'sendWorkflowIDToPopup',
+        });
+      });
+    });
+  }
+
   chrome.storage.local.get(null, (configs) => {
     if (request.method === 'getApiToken') {
-      sendResponse({ data: configs.apiToken });
+      sendResponse({ data: { apiToken: configs.apiToken } });
     }
   });
 
@@ -22,7 +31,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       body: JSON.stringify({
         query: `
         query {
-          workflow(id: "${request.workflowId}") {
+          workflow(id: "${request.workflowID}") {
             status
             jobs {
               id
@@ -42,7 +51,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       mode: 'cors',
     })
       .then(res => res.json())
-      .then(data => sendResponse({ data: data.data }));
+      .then((data) => {
+        chrome.runtime.sendMessage({
+          data: { data: data.data },
+          method: 'sendResponseOfFetchWorkflowToPopup',
+        });
+      });
   }
 
   if (request.method === 'approveWorkflow') {
@@ -65,5 +79,48 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .then(res => res.json())
       .then(data => sendResponse({ data: data.data }));
   }
+
+  if (request.method === 'cancelWorkflow') {
+    fetch('https://api.circleci.com/graphql-unstable', {
+      body: JSON.stringify({
+        query: `
+        mutation {
+          cancelWorkflow(id: "${request.workflowID}")
+        }
+      `,
+      }),
+      headers: {
+        Accept: 'application/json',
+        Authorization: request.apiToken,
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      mode: 'cors',
+    })
+      .then(res => res.json())
+      .then(data => sendResponse({ data: data.data }));
+  }
+
+  if (request.method === 'rerunWorkflow') {
+    fetch('https://api.circleci.com/graphql-unstable', {
+      body: JSON.stringify({
+        query: `
+        mutation {
+          rerunWorkflow(id: "${request.workflowID}")
+        }
+      `,
+      }),
+      headers: {
+        Accept: 'application/json',
+        Authorization: request.apiToken,
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      mode: 'cors',
+    })
+      .then(res => res.json())
+      .then(data => sendResponse({ data: data.data }));
+  }
+
   return true;
 });
