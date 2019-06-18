@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   chrome.storage.local.get(null, (configs) => {
     if (request.method === 'getApiToken') {
-      sendResponse({ data: { apiToken: configs.apiToken } });
+      sendResponse({ data: { apiToken: configs.apiToken || '' } });
     }
   });
 
@@ -53,7 +53,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .then(res => res.json())
       .then((data) => {
         chrome.runtime.sendMessage({
-          data: { data: data.data },
+          data: { data: data.data, errors: data.errors || [] },
           method: 'sendResponseOfFetchWorkflowToPopup',
         });
       });
