@@ -22,7 +22,7 @@
     "tslint-config-airbnb": "5.11.1",
     "tslint-react": "3.6.0",
     "typescript": "3.5.3",
-    "webpack": "4.24.0",
+    "webpack": "4.35.3",
     "webpack-cli": "3.1.2",
     "webpack-merge": "4.1.4"
   },
