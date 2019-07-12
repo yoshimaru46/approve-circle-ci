@@ -23,7 +23,7 @@
     "tslint-react": "4.0.0",
     "typescript": "3.5.3",
     "webpack": "4.35.3",
-    "webpack-cli": "3.1.2",
+    "webpack-cli": "3.3.5",
     "webpack-merge": "4.2.1"
   },
   "dependencies": {
