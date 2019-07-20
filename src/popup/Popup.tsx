@@ -160,11 +160,11 @@ export default class Popup extends React.Component<{}, State> {
     this.addListener();
     this.getApiToken();
 
-    this.fetchWorkflow();
     this.fetchWorkflowID();
+    setTimeout(() => this.fetchWorkflow(), 100);
 
+    this.fetchWorkflowIDTimer = setInterval(() => this.fetchWorkflowID(), 1000);
     this.fetchWorkflowTimer = setInterval(() => this.fetchWorkflow(), 1500);
-    this.fetchWorkflowIDTimer = setInterval(() => this.fetchWorkflowID(), 1500);
   }
 
   public componentWillUnmount() {
