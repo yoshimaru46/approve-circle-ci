@@ -8,19 +8,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       windowId: chrome.windows.WINDOW_ID_CURRENT,
     };
 
-    chrome.tabs.query(queryInfo, (result) => {
+    chrome.tabs.query(queryInfo, result => {
       const currentTab = result.shift();
       const message = { method: 'getWorkflowID' };
-      chrome.tabs.sendMessage(currentTab.id, message, (res) => {
+      chrome.tabs.sendMessage(currentTab.id, message, res => {
         chrome.runtime.sendMessage({
-          data: { workflowID: res.workflowID },
+          data: { workflowID: res && res.workflowID },
           method: 'sendWorkflowIDToPopup',
         });
       });
     });
   }
 
-  chrome.storage.local.get(null, (configs) => {
+  chrome.storage.local.get(null, configs => {
     if (request.method === 'getApiToken') {
       sendResponse({ data: { apiToken: configs.apiToken || '' } });
     }
@@ -37,6 +37,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
               id
               name
               type
+              status
             }
           }
         }
@@ -51,7 +52,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       mode: 'cors',
     })
       .then(res => res.json())
-      .then((data) => {
+      .then(data => {
         chrome.runtime.sendMessage({
           data: { data: data.data, errors: data.errors || [] },
           method: 'sendResponseOfFetchWorkflowToPopup',

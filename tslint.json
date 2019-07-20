@@ -6,6 +6,13 @@
     "tslint-react"
   ],
   "jsRules": {},
-  "rules": {},
+  "rules": {
+    "interface-name": [
+      false
+    ],
+    "variable-name": [
+      false
+    ]
+  },
   "rulesDirectory": []
 }

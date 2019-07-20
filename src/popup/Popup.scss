@@ -2,8 +2,9 @@ $primary-color: black;
 $background-color: lightgray;
 
 // Chrome applies an 8px margin by default (gross).
-body, p {
-  margin: 0px;
+body,
+p {
+  margin: 0;
 }
 
 .popupContainer {
@@ -27,4 +28,24 @@ body, p {
 }
 
 .workflowStatus {
+}
+
+.button {
+  border: none;
+  cursor: pointer;
+
+  &.approve {
+    color: white;
+    background-color: #42c88a;
+  }
+
+  &.rerun {
+    color: white;
+    background-color: #66d3e4;
+  }
+
+  &.cancel {
+    color: white;
+    background-color: #ed5c5c;
+  }
 }

@@ -6,7 +6,8 @@
     "build": "webpack --config webpack.prod.js",
     "dev": "webpack --config webpack.dev.js",
     "watch": "webpack -w --config webpack.dev.js",
-    "lint": "tslint 'src/**/*.{ts, tsx}'"
+    "lint": "tslint 'src/**/*.{ts, tsx}'",
+    "prettier:fix": "prettier --write \"src/**/*.{ts,tsx,scss}\""
   },
   "author": "Yoshihiro Saito",
   "license": "MIT",
@@ -15,6 +16,7 @@
     "@types/react": "16.8.23",
     "css-loader": "3.1.0",
     "node-sass": "4.12.0",
+    "prettier": "1.18.2",
     "sass-loader": "7.1.0",
     "style-loader": "0.23.1",
     "ts-loader": "6.0.4",
