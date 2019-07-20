@@ -2,7 +2,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // tslint:disable-next-line:no-console
   console.log('background.ts request', request);
 
-  if (request.method === 'popupMounted') {
+  if (request.method === 'fetchWorkflowID') {
     const queryInfo = {
       active: true,
       windowId: chrome.windows.WINDOW_ID_CURRENT,
