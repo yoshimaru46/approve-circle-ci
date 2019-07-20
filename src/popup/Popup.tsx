@@ -37,7 +37,8 @@ export default class Popup extends React.Component<{}, State> {
   public static getMessagesFromError(errors: Error[]) {
     return errors.map(e => e.message);
   }
-  public timer: any;
+  public fetchWorkflowTimer: any;
+  public fetchWorkflowIDTimer: any;
 
   constructor(props) {
     super(props);
@@ -55,6 +56,8 @@ export default class Popup extends React.Component<{}, State> {
     this.getApiToken = this.getApiToken.bind(this);
 
     this.fetchWorkflow = this.fetchWorkflow.bind(this);
+    this.fetchWorkflowID = this.fetchWorkflowID.bind(this);
+
     this.approveWorkflow = this.approveWorkflow.bind(this);
     this.cancelWorkflow = this.cancelWorkflow.bind(this);
     this.rerunWorkflow = this.rerunWorkflow.bind(this);
@@ -119,6 +122,10 @@ export default class Popup extends React.Component<{}, State> {
     );
   }
 
+  public fetchWorkflowID() {
+    chrome.runtime.sendMessage({ method: 'fetchWorkflowID' });
+  }
+
   public approveWorkflow(apiToken, buildId: string) {
     chrome.runtime.sendMessage(
       { apiToken, buildId, method: 'approveWorkflow' },
@@ -150,15 +157,19 @@ export default class Popup extends React.Component<{}, State> {
   }
 
   public componentDidMount() {
-    chrome.runtime.sendMessage({ method: 'popupMounted' });
     this.addListener();
     this.getApiToken();
 
-    this.timer = setInterval(() => this.fetchWorkflow(), 500);
+    this.fetchWorkflow();
+    this.fetchWorkflowID();
+
+    this.fetchWorkflowTimer = setInterval(() => this.fetchWorkflow(), 1500);
+    this.fetchWorkflowIDTimer = setInterval(() => this.fetchWorkflowID(), 1500);
   }
 
   public componentWillUnmount() {
-    this.timer = null;
+    this.fetchWorkflowTimer = null;
+    this.fetchWorkflowIDTimer = null;
   }
 
   public render() {
