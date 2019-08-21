@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Approve CircleCI",
   "description": "Approve Holded CircleCI job from GitHub page",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "background": {
     "scripts": [
       "js/background.js"
