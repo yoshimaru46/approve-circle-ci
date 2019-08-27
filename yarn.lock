@@ -37,10 +37,10 @@
     reflect-metadata "^0.1.12"
     tslib "^1.8.1"
 
-"@types/chrome@0.0.60":
-  version "0.0.60"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.60.tgz#058eed1587b7aec3b83d4be905c8758ea145ba84"
-  integrity sha512-65L5afQNd7yZMW3zNsz4otId8+8wsD2UQM3iz4gnni3tiKo+UDGIbvCf91txakxB6KLTk7HTTeIbxViuIg6TMw==
+"@types/chrome@0.0.88":
+  version "0.0.88"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.88.tgz#0041a101d69f78008910927c5b3299a00d8660db"
+  integrity sha512-JBsIrBZ2adJhlXvJ+1j0xLbcfOfwee/WAg7Lp2NE+Wf3m0vXMJFWv/PPjqNk5ZUXDeY/qDxPHe+PUjxnl8HWFg==
   dependencies:
     "@types/filesystem" "*"
 
