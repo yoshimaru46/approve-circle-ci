@@ -20,7 +20,7 @@
     "sass-loader": "7.3.1",
     "style-loader": "1.0.0",
     "ts-loader": "6.0.4",
-    "tslint": "5.19.0",
+    "tslint": "5.20.0",
     "tslint-config-airbnb": "5.11.1",
     "tslint-react": "4.0.0",
     "typescript": "3.6.3",
