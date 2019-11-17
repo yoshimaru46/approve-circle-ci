@@ -1,28 +1,12 @@
-import * as React from 'react';
+import * as React from "react";
 
-import Button from '../components/Button';
-import WorkflowID from '../components/WorkflowID';
-import './Popup.scss';
+import Button from "../components/Button";
+import WorkflowID from "../components/WorkflowID";
+import "./Popup.scss";
 
-interface Error {
-  extensions: any;
-  locations: any;
-  message: string;
-  path: string[];
-}
-
-interface HoldJob {
-  id: string;
-  name: string;
-  type: string;
-}
-
-interface Jobs {
-  id: string;
-  name: string;
-  type: string;
-  status: string;
-}
+import { Error } from "../interfaces/Error";
+import { HoldJob } from "../interfaces/HoldJob";
+import { Jobs } from "../interfaces/Jobs";
 
 interface State {
   apiToken: string;
@@ -31,12 +15,14 @@ interface State {
   workflowID: string;
   workflowStatus: string;
   workflowJobs: Jobs[];
+  pullReqInfo: any; // TODO
 }
 
 export default class Popup extends React.Component<{}, State> {
   public static getMessagesFromError(errors: Error[]) {
     return errors.map(e => e.message);
   }
+
   public fetchWorkflowTimer: any;
   public fetchWorkflowIDTimer: any;
 
@@ -44,16 +30,18 @@ export default class Popup extends React.Component<{}, State> {
     super(props);
 
     this.state = {
-      apiToken: '',
+      apiToken: "",
       errors: [],
       holdJob: undefined,
-      workflowID: '',
+      pullReqInfo: {},
+      workflowID: "",
       workflowJobs: [],
-      workflowStatus: 'LOADING',
+      workflowStatus: "LOADING"
     };
 
     this.addListener = this.addListener.bind(this);
     this.getApiToken = this.getApiToken.bind(this);
+    this.getPullReqInfo = this.getPullReqInfo.bind(this);
 
     this.fetchWorkflow = this.fetchWorkflow.bind(this);
     this.fetchWorkflowID = this.fetchWorkflowID.bind(this);
@@ -68,28 +56,28 @@ export default class Popup extends React.Component<{}, State> {
   public addListener() {
     chrome.runtime.onMessage.addListener(request => {
       // tslint:disable-next-line:no-console
-      console.log('Popup.tsx request', request);
+      console.log("Popup.tsx request", request);
 
-      if (request.method === 'sendWorkflowIDToPopup') {
+      if (request.method === "sendPullReqInfoToPopup") {
         this.setState({
-          workflowID: request.data.workflowID || '',
+          pullReqInfo: request.data.pullReqInfo
         });
       }
 
-      if (request.method === 'sendResponseOfFetchWorkflowToPopup') {
+      if (request.method === "sendResponseOfFetchWorkflowToPopup") {
         if (request.data.errors.length === 0) {
           const holdJob = request.data.data.workflow.jobs.find(job => {
-            return job.type === 'APPROVAL';
+            return job.type === "APPROVAL";
           });
 
           this.setState({
             holdJob,
             workflowJobs: request.data.data.workflow.jobs,
-            workflowStatus: request.data.data.workflow.status,
+            workflowStatus: request.data.data.workflow.status
           });
         } else {
           this.setState({
-            errors: request.data.errors,
+            errors: request.data.errors
           });
         }
       }
@@ -99,72 +87,93 @@ export default class Popup extends React.Component<{}, State> {
   }
 
   public getApiToken() {
-    chrome.runtime.sendMessage({ method: 'getApiToken' }, res => {
-      this.setState({
-        apiToken: res.data.apiToken,
-      });
+    chrome.storage.local.get(null, configs => {
+      this.setState({ apiToken: configs.apiToken });
     });
+  }
+
+  public getPullReqInfo() {
+    chrome.runtime.sendMessage({ method: "getPullReqInfo" });
   }
 
   public fetchWorkflow() {
     const { apiToken, workflowID } = this.state;
 
-    if (apiToken === '' || workflowID === '') {
-      return;
+    if (!(apiToken && workflowID)) {
+      throw new Error("[fetchWorkflow]: Parameter Error");
     }
 
-    chrome.runtime.sendMessage(
-      { apiToken, workflowID, method: 'fetchWorkflow' },
-      res => {
-        // tslint:disable-next-line:no-console
-        console.log(res);
-      },
-    );
+    chrome.runtime.sendMessage({
+      apiToken,
+      workflowID,
+      method: "fetchWorkflow"
+    });
   }
 
   public fetchWorkflowID() {
-    chrome.runtime.sendMessage({ method: 'fetchWorkflowID' });
+    const {
+      pullReqInfo: { branchName, organizationName, projectName }
+    } = this.state;
+
+    if (!(branchName && organizationName && projectName)) {
+      throw new Error("[fetchWorkflowID]: Parameter Error");
+    }
+
+    fetch("https://circleci.com/query-api", {
+      body: `["^ ","~:type","~:get-branch-workflow-ids","~:params",["^ ","~:organization/vcs-type","~:github","~:organization/name","${organizationName}","~:project/name","${projectName}","~:branch/name","${branchName}","~:opts",["^ ","~:offset",0,"~:limit",1]]]`,
+      credentials: "include",
+      headers: {
+        accept: "application/transit+json",
+        "accept-language": "en-US,en;q=0.9,ja;q=0.8",
+        "content-type": "application/transit+json; charset=UTF-8",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin"
+      },
+      method: "POST",
+      mode: "cors"
+    })
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          workflowID: data[4][0]
+        });
+      });
   }
 
   public approveWorkflow(apiToken, buildId: string) {
-    chrome.runtime.sendMessage(
-      { apiToken, buildId, method: 'approveWorkflow' },
-      res => {
-        // tslint:disable-next-line:no-console
-        console.log(res);
-      },
-    );
+    chrome.runtime.sendMessage({
+      apiToken,
+      buildId,
+      method: "approveWorkflow"
+    });
   }
 
   public cancelWorkflow(apiToken, workflowID: string) {
-    chrome.runtime.sendMessage(
-      { apiToken, workflowID, method: 'cancelWorkflow' },
-      res => {
-        // tslint:disable-next-line:no-console
-        console.log(res);
-      },
-    );
+    chrome.runtime.sendMessage({
+      apiToken,
+      workflowID,
+      method: "cancelWorkflow"
+    });
   }
 
   public rerunWorkflow(apiToken, workflowID: string) {
-    chrome.runtime.sendMessage(
-      { apiToken, workflowID, method: 'rerunWorkflow' },
-      res => {
-        // tslint:disable-next-line:no-console
-        console.log(res);
-      },
-    );
+    chrome.runtime.sendMessage({
+      apiToken,
+      workflowID,
+      method: "rerunWorkflow"
+    });
   }
 
   public componentDidMount() {
     this.addListener();
     this.getApiToken();
+    this.getPullReqInfo();
 
-    this.fetchWorkflowID();
-    setTimeout(() => this.fetchWorkflow(), 100);
+    setTimeout(() => this.fetchWorkflowID(), 300);
+    setTimeout(() => this.fetchWorkflow(), 500);
 
-    this.fetchWorkflowIDTimer = setInterval(() => this.fetchWorkflowID(), 1000);
-    this.fetchWorkflowTimer = setInterval(() => this.fetchWorkflow(), 1500);
+    this.fetchWorkflowIDTimer = setInterval(() => this.fetchWorkflowID(), 1500);
+    this.fetchWorkflowTimer = setInterval(() => this.fetchWorkflow(), 2000);
   }
 
   public componentWillUnmount() {
@@ -179,24 +188,15 @@ export default class Popup extends React.Component<{}, State> {
       workflowID,
       workflowJobs,
       workflowStatus,
-      errors,
+      errors
     } = this.state;
 
-    if (workflowID === '') {
-      return (
-          <div className="popupContainer">
-            <div className="popupItem">
-              <p>Can not find WorkflowID</p>
-            </div>
-          </div>
-      );
-    }
-
-    if (apiToken === '') {
+    if (!apiToken) {
       return (
         <div className="popupContainer">
           <div className="popupItem">
-            <p>Please set api token from option page</p>
+            <p>Please set api token</p>
+            <p>from Options page</p>
           </div>
         </div>
       );
@@ -218,7 +218,9 @@ export default class Popup extends React.Component<{}, State> {
     const onCancel = () => this.cancelWorkflow(apiToken, workflowID);
 
     const totalJobSize = workflowJobs.length;
-    const successJobSize = workflowJobs.filter(element => (element.status === 'SUCCESS')).length;
+    const successJobSize = workflowJobs.filter(
+      element => element.status === "SUCCESS"
+    ).length;
 
     return (
       <div className="popupContainer">
@@ -228,13 +230,10 @@ export default class Popup extends React.Component<{}, State> {
         <div className="popupItem">
           <div className="workflowStatus">
             <p>
-              {workflowStatus}
-              {' '}
+              {workflowStatus}{" "}
               {workflowJobs.length > 0 && (
-                  <small>
-                    {`(${successJobSize}/${totalJobSize})`}
-                  </small>
-                )}
+                <small>{`(${successJobSize}/${totalJobSize})`}</small>
+              )}
             </p>
           </div>
         </div>
