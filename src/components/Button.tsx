@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 
 export interface Props {
   workflowStatus: string;
@@ -8,18 +8,18 @@ export interface Props {
 }
 
 const Button = ({ workflowStatus, onApprove, onRerun, onCancel }: Props) => {
-  if (workflowStatus === 'ON_HOLD') {
+  if (workflowStatus === "ON_HOLD") {
     return (
-      <button className={'button approve'} onClick={onApprove}>
+      <button className={"button approve"} onClick={onApprove}>
         Approve
       </button>
     );
   }
 
   if (
-    workflowStatus === 'CANCELED' ||
-    workflowStatus === 'FAILED' ||
-    workflowStatus === 'SUCCESS'
+    workflowStatus === "CANCELED" ||
+    workflowStatus === "FAILED" ||
+    workflowStatus === "SUCCESS"
   ) {
     return (
       <button className="button rerun" onClick={onRerun}>
@@ -28,7 +28,7 @@ const Button = ({ workflowStatus, onApprove, onRerun, onCancel }: Props) => {
     );
   }
 
-  if (workflowStatus === 'RUNNING') {
+  if (workflowStatus === "RUNNING") {
     return (
       <button className="button cancel" onClick={onCancel}>
         Cancel
