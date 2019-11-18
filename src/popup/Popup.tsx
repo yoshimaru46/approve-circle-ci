@@ -2,11 +2,15 @@ import * as React from "react";
 
 import Button from "../components/Button";
 import WorkflowID from "../components/WorkflowID";
+import WorkflowStatus from "../components/WorkflowStatus";
 import "./Popup.scss";
 
 import { Error } from "../interfaces/Error";
 import { HoldJob } from "../interfaces/HoldJob";
 import { Jobs } from "../interfaces/Jobs";
+
+import Card from "@bit/semantic-org.semantic-ui-react.card";
+import Progress from "@bit/semantic-org.semantic-ui-react.progress";
 
 interface State {
   apiToken: string;
@@ -192,24 +196,15 @@ export default class Popup extends React.Component<{}, State> {
     } = this.state;
 
     if (!apiToken) {
-      return (
-        <div className="popupContainer">
-          <div className="popupItem">
-            <p>Please set api token</p>
-            <p>from Options page</p>
-          </div>
-        </div>
-      );
+      return <p>Please set api token from Options page</p>;
     }
 
     if (errors.length > 0) {
       return (
-        <div className="popupContainer">
-          <div className="popupItem">
-            <p>Errors:</p>
-            {Popup.getMessagesFromError(errors)}
-          </div>
-        </div>
+        <>
+          <p>Errors:</p>
+          {Popup.getMessagesFromError(errors)}
+        </>
       );
     }
 
@@ -217,35 +212,40 @@ export default class Popup extends React.Component<{}, State> {
     const onRerun = () => this.rerunWorkflow(apiToken, workflowID);
     const onCancel = () => this.cancelWorkflow(apiToken, workflowID);
 
-    const totalJobSize = workflowJobs.length;
-    const successJobSize = workflowJobs.filter(
+    const totalJobSize = workflowJobs?.length;
+    const successJobSize = workflowJobs?.filter(
       element => element.status === "SUCCESS"
     ).length;
 
+    const progress = Math.round((successJobSize / totalJobSize) * 100);
+
     return (
-      <div className="popupContainer">
-        <div className="popupItem">
-          <WorkflowID workflowID={workflowID} />
-        </div>
-        <div className="popupItem">
-          <div className="workflowStatus">
-            <p>
-              {workflowStatus}{" "}
-              {workflowJobs.length > 0 && (
-                <small>{`(${successJobSize}/${totalJobSize})`}</small>
-              )}
-            </p>
-          </div>
-        </div>
-        <div className="popupItem">
+      <Card style={{ width: "auto" }}>
+        <Card.Content>
+          <Card.Header>
+            <WorkflowID workflowID={workflowID} />
+          </Card.Header>
+        </Card.Content>
+        <Card.Content>
+          <WorkflowStatus workflowStatus={workflowStatus} />
+        </Card.Content>
+        <Card.Content>
+          <Progress
+            percent={progress}
+            progress={true}
+            indicating={true}
+            style={{ marginBottom: 0 }}
+          />
+        </Card.Content>
+        <Card.Content style={{ textAlign: "center" }}>
           <Button
             workflowStatus={workflowStatus}
             onApprove={onApprove}
             onRerun={onRerun}
             onCancel={onCancel}
           />
-        </div>
-      </div>
+        </Card.Content>
+      </Card>
     );
   }
 }

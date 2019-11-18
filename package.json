@@ -30,6 +30,11 @@
     "webpack-merge": "4.2.2"
   },
   "dependencies": {
+    "@bit/semantic-org.semantic-ui-react.button": "^0.86.0",
+    "@bit/semantic-org.semantic-ui-react.card": "^0.86.0",
+    "@bit/semantic-org.semantic-ui-react.label": "^0.86.0",
+    "@bit/semantic-org.semantic-ui-react.loader": "^0.86.0",
+    "@bit/semantic-org.semantic-ui-react.progress": "^0.86.0",
     "react": "16.12.0",
     "react-dom": "16.12.0"
   }
