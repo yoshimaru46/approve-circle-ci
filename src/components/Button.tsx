@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import Button from "@bit/semantic-org.semantic-ui-react.button";
+
 export interface Props {
   workflowStatus: string;
   onApprove: () => void;
@@ -7,12 +9,17 @@ export interface Props {
   onCancel: () => void;
 }
 
-const Button = ({ workflowStatus, onApprove, onRerun, onCancel }: Props) => {
+const WorkFlowButton = ({
+  workflowStatus,
+  onApprove,
+  onRerun,
+  onCancel
+}: Props) => {
   if (workflowStatus === "ON_HOLD") {
     return (
-      <button className={"button approve"} onClick={onApprove}>
+      <Button color="green" size="tiny" onClick={onApprove}>
         Approve
-      </button>
+      </Button>
     );
   }
 
@@ -22,20 +29,25 @@ const Button = ({ workflowStatus, onApprove, onRerun, onCancel }: Props) => {
     workflowStatus === "SUCCESS"
   ) {
     return (
-      <button className="button rerun" onClick={onRerun}>
+      <Button color="blue" size="tiny" onClick={onRerun}>
         Rerun
-      </button>
+      </Button>
     );
   }
 
   if (workflowStatus === "RUNNING") {
     return (
-      <button className="button cancel" onClick={onCancel}>
+      <Button color="orange" size="tiny" onClick={onCancel}>
         Cancel
-      </button>
+      </Button>
     );
   }
 
-  return <button disabled={true}>...</button>;
+  return (
+    // @ts-ignore
+    <Button loading={true} size="tiny">
+      Loading
+    </Button>
+  );
 };
-export default Button;
+export default WorkFlowButton;
