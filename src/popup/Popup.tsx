@@ -219,6 +219,9 @@ export default class Popup extends React.Component<{}, State> {
 
     const progress = Math.round((successJobSize / totalJobSize) * 100);
 
+    const indicating =
+      workflowStatus === "RUNNING" || workflowStatus === "FAILING";
+
     return (
       <Card style={{ width: "auto" }}>
         <Card.Content>
@@ -233,7 +236,7 @@ export default class Popup extends React.Component<{}, State> {
           <Progress
             percent={progress}
             progress={true}
-            indicating={true}
+            indicating={indicating}
             style={{ marginBottom: 0 }}
           />
         </Card.Content>

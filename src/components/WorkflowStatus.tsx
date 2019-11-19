@@ -27,6 +27,9 @@ const WorkflowStatus = ({ workflowStatus }: Props) => {
         color = "grey";
         break;
       case "CANCELED":
+        color = "yellow";
+        break;
+      case "FAILING":
         color = "orange";
         break;
       case "FAILD":

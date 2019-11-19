@@ -35,7 +35,7 @@ const WorkFlowButton = ({
     );
   }
 
-  if (workflowStatus === "RUNNING") {
+  if (workflowStatus === "RUNNING" || workflowStatus === "FAILING") {
     return (
       <Button color="orange" size="tiny" onClick={onCancel}>
         Cancel
