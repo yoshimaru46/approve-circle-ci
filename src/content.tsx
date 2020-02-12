@@ -1,9 +1,9 @@
 function getPullReqInfo() {
-  const branchNameElement = document.querySelector('div.file-navigation > details.branch-select-menu > summary');
-  const branchNameElementTitle = branchNameElement.getAttribute('title');
+  const branchNameElement = document.querySelector("div.file-navigation > details.branch-select-menu > summary");
+  const branchNameElementTitle = branchNameElement.getAttribute("title");
   
-  const branchName = branchNameElementTitle.indexOf(' ') === -1 ? 
-        branchNameElementTitle : branchNameElement.querySelector('span.css-truncate-target').textContent;
+  const branchName = branchNameElementTitle.indexOf(" ") === -1 ? 
+        branchNameElementTitle : branchNameElement.querySelector("span.css-truncate-target").textContent;
 
   return {
     branchName,
