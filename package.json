@@ -27,7 +27,7 @@
     "typescript": "3.9.7",
     "webpack": "4.41.4",
     "webpack-cli": "3.3.10",
-    "webpack-merge": "4.2.2"
+    "webpack-merge": "5.0.9"
   },
   "dependencies": {
     "@bit/semantic-org.semantic-ui-react.button": "^0.86.0",
